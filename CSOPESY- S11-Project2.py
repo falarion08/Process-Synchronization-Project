@@ -1,20 +1,25 @@
 import threading
 from threading import *
 from numpy.random import *
+import time
+
 
 class ThreadID:
     def __init__(self, id, color):
         self.id = id
         self.color = color
-        self.thread = Thread(target=dressingRoom, args = [id,color])
         
-def dressingRoom(thread_id, thread_color):
+def dressingRoom(ThreadID):
+    global maxSlot
+    global customersLeft
+    print(f'{ThreadID.color} {ThreadID.id} is attempting to enter the dressing room')
     maxSlot.acquire()
-    print(f'ID: {thread_id} {thread_color} has entered the fitting room')
+    customersLeft = customersLeft - 1
+    print(f'{ThreadID.color} {ThreadID.id}  has entered the dressing room')
     maxSlot.release()
+    print(f'{ThreadID.color} {ThreadID.id}  has left the dressing room')
 
-def handleBlueThreads(blueThreads):
-    print(blueThreads)
+    
 
 def main():
     n = int(input('Enter the number of slots in the fitting room:'))
@@ -24,50 +29,40 @@ def main():
     global maxSlot
     maxSlot = BoundedSemaphore(n)
 
-    global semaphore
-    semaphore = Semaphore()
-
 
     # [0] Blue First, [1] Green First
     chooser = randint(2)
-
-    if chooser == 1:
+    
+    global curr_color
+    
+    if (chooser == 1 and g > 0) or (chooser == 0 and (b <= 0 and g > 0)):
         curr_color = 'Green'
-    else:
+    elif (chooser == 0 and b > 0) or (chooser == 1 and (b > 0 and g <= 0 )):
         curr_color = 'Blue'
-
-    blueThreads = []
-    greenThreads = []
 
     blueCounter = 1
     greenCounter = 1
-
-    while(b > 0 and g > 0):
+    
+    global customersLeft
+    customersLeft = g + b
+    
+    while customersLeft > 0:
+        i = 0
         if curr_color == 'Blue':
-            i = 0
-            while(i < n):
-                if b == 0:
-                    break
-                blueThreads.append(ThreadID(blueCounter, 'Blue'))
-                blueThreads[blueCounter-1].thread.start()
+            while i < n and b > 0: 
+                Thread(target=dressingRoom, args = [ThreadID(blueCounter, curr_color)]).start()
                 i = i + 1
-                blueCounter = blueCounter + 1
                 b = b - 1
-                
-            handleBlueThreads(blueThreads)
+                blueCounter = blueCounter + 1
+            curr_color = 'Green'
         else:
-            i = 0
-            while(i < n):
-                if g == 0:
-                    break
-                greenThreads.append(ThreadID(greenCounter, 'Green'))
-
-                greenThreads[greenCounter - 1].thread.start()
+            while i < n and g > 0:
+                Thread(target = dressingRoom, args = [ThreadID(greenCounter, curr_color)]).start()
                 i = i + 1
-                greenCounter = greenCounter + 1
                 g = g - 1
-                
-
+                greenCounter = greenCounter + 1
+            curr_color = 'Blue'
+    
 
 if __name__ == '__main__':
     main()
