@@ -96,7 +96,6 @@ def main():
         if curr_color == 'Blue':
             while i < n and b > 0: 
                 blueThread = ThreadID(blueCounter, curr_color)
-                blueThreads.append(blueThread)
                 
                 thread = Thread(target=dressingRoom, args = [blueThread, n, curr_color,b,g])
                 thread.start()
@@ -114,9 +113,7 @@ def main():
 
         else:
             while i < n and g > 0:
-                greenThread = ThreadID(greenCounter, curr_color)
-                greenThreads.append(greenThread)
-                
+                greenThread = ThreadID(greenCounter, curr_color)                
                 thread = Thread(target = dressingRoom, args = [greenThread, n, curr_color,b,g])
                 thread.start()
                 
