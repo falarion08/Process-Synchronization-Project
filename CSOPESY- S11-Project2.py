@@ -23,6 +23,7 @@ def dressingRoom(ThreadID):
     maxSlot.release()
     print(f'{ThreadID.color} {ThreadID.id}  has left the dressing room')
 
+<<<<<<< Updated upstream
 def dressingRoomOver(ThreadID):
     maxSlot.release()
     print(f'{ThreadID.color} {ThreadID.id}  has left the dressing room')
@@ -32,6 +33,32 @@ def main():
     b = int(input("Number of blue threads: "))
     g = int(input("Number of green threads: "))
   
+=======
+    customersInside = customersInside + 1
+
+    if (customersInside == limit or customersLeft == 0):
+        if curr_color == 'Blue':
+            while len(blueThreads) > 0:
+                print(f'{blueThreads[0].color} {blueThreads[0].id} has left the dressing room')
+                blueThreads.pop(0)
+                customersInside -= 1
+                maxSlot.release()
+        else:
+            while len(greenThreads) > 0:
+                print(f'{greenThreads[0].color} {greenThreads[0].id} has left the dressing room')
+                greenThreads.pop(0)
+                customersInside -= 1
+                maxSlot.release()
+
+        print('Dressing Room Empty...')
+            
+
+def main():
+    n = int(input('Enter the number of slots in the fitting room: '))
+    b = int(input('Enter the number of blue threads: '))
+    g = int(input('Enter the number of green threads: '))
+
+>>>>>>> Stashed changes
     global maxSlot
     maxSlot = BoundedSemaphore(n)
 
