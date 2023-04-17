@@ -9,7 +9,7 @@ class ThreadID:
         self.id = id
         self.color = color
         
-def dressingRoom(ThreadID, limit, curr_color):
+def dressingRoom(ThreadID, limit, curr_color,b,g):
     global maxSlot
     global customersLeft
     global customersInside
@@ -19,7 +19,7 @@ def dressingRoom(ThreadID, limit, curr_color):
     maxSlot.acquire()
     
     customersLeft = customersLeft - 1
-    
+
     if curr_color == 'Green':
         greenThreads.append(ThreadID)
     else:
@@ -32,25 +32,30 @@ def dressingRoom(ThreadID, limit, curr_color):
 
     customersInside = customersInside + 1
 
-    if (customersInside == limit):
+    if ((customersInside == limit)):
             if curr_color == 'Blue':
                 while(len(blueThreads) > 0):
                     print(f'{blueThreads[0].color} {blueThreads[0].id} has left the dressing room')
                     blueThreads.pop(0)
+                if b > 0:
+                    print('Dressing Room Empty...')
+                maxSlot.release(customersInside)
+
             else:
                 while(len(greenThreads) > 0):
                     print(f'{greenThreads[0].color} {greenThreads[0].id} has left the dressing room')
                     greenThreads.pop(0)
+                if g > 0:
+                    print('Dressing Room Empty...')
+                maxSlot.release(customersInside)
                                 
-            maxSlot.release(customersInside)
             customersInside = 0
-            print('Dressing Room Empty...')
         
 
 
     
 
-def main():
+def main():    
     n = int(input('Enter the number of slots in the fitting room:'))
     b = int(input('Enter the number of blue threads:'))
     g = int(input('Enter the number of green threads:'))
@@ -82,23 +87,48 @@ def main():
     blueThreads = []
     greenThreads = []
     
+    handleBlueThreadsList = []
+    handleGreenThreadsList = []
+
+
     while customersLeft > 0:
         i = 0
         if curr_color == 'Blue':
             while i < n and b > 0: 
-                Thread(target=dressingRoom, args = [ThreadID(blueCounter, curr_color), n, curr_color]).start()
+                blueThread = ThreadID(blueCounter, curr_color)
+                blueThreads.append(blueThread)
+                
+                thread = Thread(target=dressingRoom, args = [blueThread, n, curr_color,b,g])
+                thread.start()
+                
+                handleBlueThreadsList.append(thread)
+                
                 i = i + 1
                 b = b - 1
                 blueCounter = blueCounter + 1
+            
+            for t in handleBlueThreadsList:
+                t.join()
+            
             curr_color = 'Green'
+
         else:
             while i < n and g > 0:
-                Thread(target = dressingRoom, args = [ThreadID(greenCounter, curr_color), n, curr_color]).start()
+                greenThread = ThreadID(greenCounter, curr_color)
+                greenThreads.append(greenThread)
+                
+                thread = Thread(target = dressingRoom, args = [greenThread, n, curr_color,b,g])
+                thread.start()
+                
+                handleGreenThreadsList.append(thread)
                 i = i + 1
                 g = g - 1
                 greenCounter = greenCounter + 1
+            
+            for t in handleGreenThreadsList:
+                t.join()
             curr_color = 'Blue'
-    
+
 
 if __name__ == '__main__':
     main()
