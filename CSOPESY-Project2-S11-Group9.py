@@ -36,7 +36,7 @@ def dressingRoom(ThreadID, limit, curr_color,b,g):
         customersInside = customersInside + 1
 
     # If max number of customer is reached inside the dressing room
-    if ((customersInside == limit)):
+    if ((customersInside == limit) or (customersInside == g and curr_color == 'Green') or(customersInside == b and curr_color == 'Blue')):
             if curr_color == 'Blue':
                 while(len(blueThreads) > 0):
                     # Prints out the threads inside the dressing room to indicate that they are leaving
@@ -139,6 +139,7 @@ def main():
                 t.join()
                 
             # Switches over to a new color to prevent starvation
+            time.sleep(1)
             curr_color = 'Green'
 
         else:
@@ -161,6 +162,7 @@ def main():
                 # Ensures each thread currently stored in the list is terminated
                 t.join()
             # Switches over to a new color to prevent starvation
+            time.sleep(1)
             curr_color = 'Blue'
 
 
