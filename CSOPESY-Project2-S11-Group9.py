@@ -25,12 +25,13 @@ def dressingRoom(ThreadID, limit, curr_color,b,g):
     else:
         blueThreads.append(ThreadID)
 
-    print(f'{ThreadID.color} {ThreadID.id}  has entered the dressing room')
+    if ThreadID.color == curr_color:
+        print(f'{ThreadID.color} {ThreadID.id}  has entered the dressing room')
     
-    if(customersInside == 0):
-        print(f'{curr_color} only')
+        if(customersInside == 0):
+            print(f'{curr_color} only')
 
-    customersInside = customersInside + 1
+        customersInside = customersInside + 1
 
     if ((customersInside == limit)):
             if curr_color == 'Blue':
@@ -99,7 +100,7 @@ def main():
                 
                 thread = Thread(target=dressingRoom, args = [blueThread, n, curr_color,b,g])
                 thread.start()
-                
+                time.sleep(1)
                 handleBlueThreadsList.append(thread)
                 
                 i = i + 1
@@ -116,7 +117,7 @@ def main():
                 greenThread = ThreadID(greenCounter, curr_color)                
                 thread = Thread(target = dressingRoom, args = [greenThread, n, curr_color,b,g])
                 thread.start()
-                
+                time.sleep(1)
                 handleGreenThreadsList.append(thread)
                 i = i + 1
                 g = g - 1
@@ -125,6 +126,7 @@ def main():
             for t in handleGreenThreadsList:
                 t.join()
             curr_color = 'Blue'
+
 
 
 if __name__ == '__main__':
